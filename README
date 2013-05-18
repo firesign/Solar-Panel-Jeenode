@@ -1,0 +1,5 @@
+ Solar-Panel-Jeenode
+ Send out a radio packet every minute, consuming as little power as possible.
+ Uses DHT22 temp & humidity sensors
+ Code from Radioblip
+ 2012-05-09 <jc@wippler.nl> http://opensource.org/licenses/mit-license.php
