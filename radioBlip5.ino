@@ -68,7 +68,8 @@ void setup() {
 #if defined(__AVR_ATtiny84__)
   CLKPR = 0; // div 1, i.e. speed up to 8 MHz
 #else
-  CLKPR = 1; // div 2, i.e. slow down to 8 MHz
+  // THE FOLLOWING LINE MUST BE COMMENTED-OUT SO THAT THE DHT UNIT CAN OPERATE
+  //CLKPR = 1; // div 2, i.e. slow down to 8 MHz
 #endif
   sei();
   rf12_initialize(BLIP_NODE, RF12_433MHZ, BLIP_GRP);
