@@ -55,7 +55,7 @@ static byte vccRead (byte count =4) {
 }
 
 void setup() {
-  Serial.begin(9600); 
+  //Serial.begin(9600); 
   //Serial.println("DHTxx test!");
  
   dht.begin();
@@ -68,7 +68,7 @@ void setup() {
 #if defined(__AVR_ATtiny84__)
   CLKPR = 0; // div 1, i.e. speed up to 8 MHz
 #else
-  //CLKPR = 1; // div 2, i.e. slow down to 8 MHz
+  CLKPR = 1; // div 2, i.e. slow down to 8 MHz
 #endif
   sei();
   rf12_initialize(BLIP_NODE, RF12_433MHZ, BLIP_GRP);
@@ -118,7 +118,7 @@ void loop() {
   float t = dht.readTemperature();
   delay(200);
   if (isnan(t) || isnan(h)) {
-  Serial.println("Failed to read from DHT");
+  //Serial.println("Failed to read from DHT");
   } else {	
       
 	t = t * 10;
@@ -136,13 +136,13 @@ void loop() {
   payload.hum = hh;
   
   adc = analogRead(batteryPin);
-  Serial.print("Voltage from divider: ");
-  Serial.println(adc);
+  /* Serial.print("Voltage from divider: ");
+  Serial.println(adc); */
   float reconstitutedV = (3.4 * adc) / 512;
-  Serial.print("Actual Input Voltage: ");
+  /* Serial.print("Actual Input Voltage: ");
   Serial.print(reconstitutedV);
   Serial.println(" Volts");
-  Serial.println("");
+  Serial.println(""); */
   
   payload.batt = adc;
   
