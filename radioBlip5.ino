@@ -26,16 +26,13 @@ int adc;
 struct {
 	int temp;	  // temperature
 	int hum;	  // humidity
-	byte vcc1;  // VCC before transmit, 1.0V = 0 .. 6.0V = 250
-	byte vcc2;  // VCC after transmit, will be sent in next cycle
 	int batt;	  // 1/2 of battery level
 } payload;
 
+// this must be defined since we're using the watchdog for low-power waiting
+ISR(WDT_vect) { Sleepy::watchdogEvent(); }
 
 void setup() {
-	//Serial.begin(9600); 
-	//Serial.println("DHTxx test!");
-
 	dht.begin();
 
 	analogReference(EXTERNAL);		// connect 3.4V to AREF (pin 21)
@@ -94,6 +91,7 @@ void loop() {
 	payload.batt = adc;
 
 	sendPayload();
+	Sleepy::loseSomeTime(60000); //wake up and report in every 2 minutes
 
-	delay(30000);
+	//delay(30000);
 }
