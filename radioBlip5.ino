@@ -42,6 +42,7 @@ struct {
 ISR(WDT_vect) { Sleepy::watchdogEvent(); }
 
 void setup() {
+ //Serial.begin(9600);
 	dht.begin();				// DHT22
 	sensors.begin();			// DS1820
 
@@ -101,8 +102,8 @@ void loop() {
 	payload.batt = adc;
 	
 	sensors.requestTemperatures(); // Send the command to DS1820 get temperatures
-	batttemp = (sensors.getTempCByIndex(0))	* 100;	// in Celcius * 100
- 
+	payload.batttemp = sensors.getTempCByIndex(0) * 100;	// in Celcius * 100
+
 	sendPayload();
 	Sleepy::loseSomeTime(60000); //wake up and report in every 2 minutes
 
