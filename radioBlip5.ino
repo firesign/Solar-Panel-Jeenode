@@ -3,7 +3,11 @@
  Send out a radio packet every minute, consuming as little power as possible.
  Uses DHT22 temp & humidity sensor, DS1820 temperature sensor for battery pack temp
  Code from Radioblip
- 2012-05-09 <jc@wippler.nl> http://opensource.org/licenses/mit-license.php 
+ 2012-05-09 <jc@wippler.nl> http://opensource.org/licenses/mit-license.php
+ 
+ Battery monitor uses a 100k resistor divider through a 4066 digital switch so that the
+ divider does not draw current while the rest of the system is powered down. The
+ digital switch is driven through DIO7.
  */
 
 #include <JeeLib.h>
@@ -28,7 +32,8 @@ DallasTemperature sensors(&oneWire);	// Pass our oneWire reference to Dallas Tem
 
 DHT dht(DHTPIN, DHTTYPE);
 
-int batteryPin = 0; // Analog 0
+int rdivider = 7;	// Resistor divider enable to 4066
+int batteryPin = 0; 	// Analog 0
 int adc;
 
 struct {
@@ -47,7 +52,8 @@ void setup() {
 	sensors.begin();			// DS1820
 
 	analogReference(EXTERNAL);		// connect 3.4V to AREF (pin 21)
-	pinMode (batteryPin, OUTPUT);
+	pinMode (batteryPin, INPUT);		// set up battery level input
+	pinMode (rdivider, OUTPUT);		// set up battery sense enable
 
 	rf12_initialize(BLIP_NODE, RF12_433MHZ, BLIP_GRP);
 	// see http://tools.jeelabs.org/rfm12b
@@ -67,12 +73,15 @@ static byte sendPayload () {
 
 
 void loop() {
+ 
+	
 	// DHT SECTION ******************************
 	int tt, hh;
 	float h = dht.readHumidity();
 	delay(200);
 	float t = dht.readTemperature();
 	delay(200);
+	digitalWrite(rdivider, HIGH);		// enable resistor divider
 	if (isnan(t) || isnan(h)) {
 		//Serial.println("Failed to read from DHT");
 	} else {	
@@ -91,7 +100,10 @@ void loop() {
 	payload.temp = tt;
 	payload.hum = hh;
 
-	adc = analogRead(batteryPin);
+
+	//delay(2);				// wait 2ms
+	adc = analogRead(batteryPin);		// get battery level
+	digitalWrite(rdivider, LOW);		// disable resistor divider
 	/* Serial.print("Voltage from divider: ");
 	Serial.println(adc); */
 	float reconstitutedV = (3.4 * adc) / 512;
